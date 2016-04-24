@@ -15,7 +15,7 @@ public interface PeopleDataService {
 	interface Evaluator{
 		boolean include(PersonAndLocation candidate);
 	}
-	public  List<PersonAndLocation> getFromUrl(URL url) throws IOException;
+	public  List<PersonAndLocation> getFromUrl(URL url);
 	public  List<PersonAndLocation> remove(List<PersonAndLocation> inputList,
 			Evaluator criterion);
 	public void output(PrintStream out, List<PersonAndLocation> peopleList,

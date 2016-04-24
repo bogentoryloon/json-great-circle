@@ -15,14 +15,16 @@ import org.springframework.stereotype.Service;
 
 import ie.jtc.nearby.beans.PersonAndLocation;
 import ie.jtc.nearby.jackson.JacksonReader;
+import lombok.extern.java.Log;
 @Service
+@Log
 public class PeopleDataServiceImpl implements PeopleDataService {
-	static Logger logger = LoggerFactory.getLogger(PeopleDataService.class);
+	
 	@Autowired 
 	JacksonReader jacksonReader;
 
 	@Override
-	public List<PersonAndLocation> getFromUrl(URL url) throws IOException {
+	public List<PersonAndLocation> getFromUrl(URL url)  {		
 		return jacksonReader.getJsonPeople(url);
 	}
 
