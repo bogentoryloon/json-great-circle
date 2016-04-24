@@ -1,4 +1,5 @@
 package ie.jtc.nearby.beans;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,6 +7,7 @@ import lombok.Setter;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class LongitudeAndLatitude {
 	private double longitude;
 	private double latitude;

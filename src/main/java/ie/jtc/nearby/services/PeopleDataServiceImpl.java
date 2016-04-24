@@ -45,7 +45,7 @@ public class PeopleDataServiceImpl implements PeopleDataService {
 			Collections.sort(peopleList, sorter);
 		}
 		for (PersonAndLocation person : peopleList) {
-			out.println(person.toString());
+			out.println(person.getName()+"(user id "+person.getUserId()+")");
 		}
 		
 	}
