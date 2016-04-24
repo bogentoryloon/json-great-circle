@@ -27,6 +27,7 @@ import ch.qos.logback.classic.spi.LoggingEventVO;
 import ch.qos.logback.core.Appender;
 import ie.jtc.nearby.beans.PersonAndLocation;
 import ie.jtc.nearby.jackson.JacksonReader;
+import lombok.extern.java.Log;
 
 
 
@@ -38,6 +39,7 @@ import ie.jtc.nearby.jackson.JacksonReader;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {PeopleDataServiceImpl.class,JacksonReader.class})
+@Log
 public class PeopleDataServiceUrlReading extends PeopleDataServiceBase {
 
 	@Test
@@ -61,20 +63,37 @@ public class PeopleDataServiceUrlReading extends PeopleDataServiceBase {
         assertEquals( Level.WARN,loggingEvent.getLevel());
         assertThat(loggingEvent.getMessage(),CoreMatchers.containsString("bad url:"+badUrl ));
 	}
+	/**
+	 * test an valid url with invalid JSON contents
+	 * surprisingly, the Jackson implementation throws a RunTime
+	 * (because it uses the Iterator interface)
+	 * TODO: check this is acceptable behaviour, investigate alternate
+	 * implementations
+	 * @throws MalformedURLException
+	 */
 	@Test 
 	public void testWrongUrl() throws MalformedURLException{
 		String badUrlString ="http://www.google.com";
 		URL badUrl=new URL(badUrlString);
-		List<PersonAndLocation> people = peopleService.getFromUrl(badUrl);
-		assertEquals(0,people.size() );
+		try{
+			List<PersonAndLocation> people = peopleService.getFromUrl(badUrl);
+			fail();
+		}catch( RuntimeException e){
+			log.info("exepcted failure");
+		}
+	}
+	@Test
+	public void testMissingData(){
+		URL url = super.fileToURL("original-missing-cols.txt");
+		List<PersonAndLocation> people = peopleService.getFromUrl(url);
+		assertEquals(7,people.size() );
 		/**
 		 * check we got a warning
 		 */
         Mockito.verify(mockAppender).doAppend(captorLoggingEvent.capture());
-        //
         final ch.qos.logback.classic.spi.LoggingEvent loggingEvent = captorLoggingEvent.getValue();
         assertEquals( Level.WARN,loggingEvent.getLevel());
-        assertThat(loggingEvent.getMessage(),CoreMatchers.containsString("bad url:"+badUrl ));
+        assertThat(loggingEvent.getMessage(),CoreMatchers.containsString("failed at line 2"));
 	}
 
 }
