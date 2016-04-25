@@ -8,6 +8,11 @@ import lombok.Setter;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ *	representation of co-ordinates, specified in fractional degrees 
+ * @author John
+ *
+ */
 public class LongitudeAndLatitude {
 	private double longitude;
 	private double latitude;

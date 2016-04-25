@@ -27,7 +27,8 @@ public class JacksonReader {
 	 * map a json stream to our intermediate DTO class then transform into the
 	 * application PersonAndLocation we catch and log exceptions and return
 	 * empty or partial data sets
-	 * 
+	 * TODO: implementation is not particularly robust : an erroneous url
+	 * will cause a runtime exception. investigate whether this is acceptable
 	 * @param url
 	 * @return
 	 */

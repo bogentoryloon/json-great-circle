@@ -14,12 +14,19 @@ import ie.jtc.nearby.beans.PersonAndLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import ie.jtc.nearby.services.LocationService;
 import ie.jtc.nearby.services.PeopleDataService;
 
+/**
+ * command line interface to the intercom.io 2nd exercise,
+ * parsing some json, filters it based on great circle distances, then outputs to stdout.
+ * @author John
+ *
+ */
 @SpringBootApplication
 public class RunApp {
 	Logger logger = LoggerFactory.getLogger(RunApp.class);
@@ -29,16 +36,26 @@ public class RunApp {
 	LocationService locationService;
 	public static void main(String[] args) throws MalformedURLException, IOException {
 		SpringApplication.run(RunApp.class, args);
-		//new RunApp().run();
 	}
-	private int cutoffDistance=100;
+	
 
+	/**
+	 * Spring (not lombok) dynamic properties,
+	 * are contained in application.properties
+	 */
+	@Value("${nearby.people.url}")
+	private String url ;
+	@Value("${nearby.base.coords}")
+	private String baseLongLat;
+	@Value("${nearby.radius_km}")
+	private int cutoffDistance;
+	
 	@PostConstruct
 	void run() throws MalformedURLException, IOException{
-		String url = "https://gist.github.com/brianw/19896c50afa89ad4dec3/raw/6c11047887a03483c50017c1d451667fd62a53ca/gistfile1.txt";	
-		String baseLongLat="-6.2592576,53.3381985";
+	
 		List<PersonAndLocation> customerList = peopleDataService.getFromUrl(new URL(url));
 		LongitudeAndLatitude base=new LongitudeAndLatitude(baseLongLat);
+		// return a subset of the list of people based on distance from a location
 		List<PersonAndLocation> selectFew = peopleDataService.remove(customerList,new PeopleDataService.Evaluator() {						
 			@Override
 			public boolean include(PersonAndLocation candidate) {
@@ -47,6 +64,9 @@ public class RunApp {
 				return ( kmsAway <= cutoffDistance );				
 			}
 		});
+		/**
+		 * output the simple representation of PersonAndData ordered by user_id
+		 */
 		peopleDataService.output(System.out,selectFew,new Comparator<PersonAndLocation>() {
 			@Override
 			public int compare(PersonAndLocation o1, PersonAndLocation o2) {
@@ -68,4 +88,6 @@ public class RunApp {
 				
 		
 	}
+
+
 }
